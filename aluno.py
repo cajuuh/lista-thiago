@@ -1,15 +1,17 @@
-class Aluno:  # classe
+import json
 
+
+class Aluno:  # classe
     def __init__(self):
-        self.nome = ''
+        self.nome = ""
         self.notas = []
         self.media = 0
 
     def __str__(self):
-        return self.nome
+        return str(self.nome)
 
-    def __arr__(self):
+    def __list__(self):
         return self.notas
 
-    def __str__(self):
-        return self.media
+    def __float__(self):
+        return float(self.media)
