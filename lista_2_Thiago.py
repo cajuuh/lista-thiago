@@ -1,9 +1,18 @@
 import json
+import os.path
 from aluno import Aluno
 
 alunos = []
 user_choice = ""
 aluno = Aluno()
+
+if os.path.isfile("lista_alunos.json"):
+    aluno_from_json = Aluno()
+    with open("lista_alunos.json") as dados_carregados:
+        dados = json.load(dados_carregados)
+        for aluno in dados:
+            print(aluno)
+
 
 perguntas = [
     " 1. Adicionar Aluno",
@@ -20,7 +29,8 @@ perguntas = [
     " 12. Exibir alunos aprovados por média",
     " 13. Exibir Alunos Na Final (>=5)",
     " 14. Exibir Alunos Reprovados (<5)",
-    " 15. Encerra o Programa",
+    " 15. Salva lista de alunos",
+    " 16. Encerra o Programa",
 ]
 
 
@@ -79,11 +89,20 @@ def add_nota():
     nome_aluno = input("\n Digite o nome do aluno para o qual deseja adicionar uma nota: ")
     if checa_existe(alunos, lambda x: x.nome == nome_aluno):
         aluno = busca_aluno(nome_aluno)
-        nova_nota1 = input("\n Digite a primeira nota do aluno: ")
+        nova_nota1 = float(input("\n Digite a primeira nota do aluno: "))
+        while nova_nota1 < 0 or nova_nota1 > 10:
+            print("As notas devem estar entre 0.0 e 10.0")
+            nova_nota1 = float(input("\n Digite a primeira nota do aluno: "))
         aluno.notas.append(float(nova_nota1))
-        nova_nota2 = input("\n Digite a segunda nota do aluno: ")
+        nova_nota2 = float(input("\n Digite a segunda nota do aluno: "))
+        while nova_nota2 < 0 or nova_nota2 > 10:
+            nova_nota2 = float(input("\n Digite a segunda nota do aluno: "))
+            print("As notas devem estar entre 0.0 e 10.0")
         aluno.notas.append(float(nova_nota2))
-        nova_nota3 = input("\n Digite a terceira nota do aluno: ")
+        nova_nota3 = float(input("\n Digite a terceira nota do aluno: "))
+        while nova_nota2 < 0 or nova_nota2 > 10:
+            nova_nota3 = float(input("\n Digite a terceira nota do aluno: "))
+            print("As notas devem estar entre 0.0 e 10.0")
         aluno.notas.append(float(nova_nota3))
         aluno.media = do_media(aluno.notas)
     else:
@@ -161,7 +180,7 @@ def busca_aluno_nome():
                 "\n"
                 + nomes.nome
                 + "."
-                + "Notas: "
+                + " Notas: "
                 + str(nomes.notas[0])
                 + " "
                 + str(nomes.notas[1])
@@ -191,7 +210,7 @@ def melhor_aluno_turma():
         "\n"
         + melhor_aluno.nome
         + "."
-        + "Notas: "
+        + " Notas: "
         + melhor_aluno.notas[0]
         + " "
         + melhor_aluno.notas[1]
@@ -213,7 +232,7 @@ def show_alunos_sorted_alpha():
                 "\n"
                 + aluno.nome
                 + "."
-                + "Notas: "
+                + " Notas: "
                 + str(aluno.notas[0])
                 + " "
                 + str(aluno.notas[1])
@@ -233,19 +252,54 @@ def show_sorted_alunos_notas():
         print(
             aluno.nome
             + "."
-            + "Notas: "
+            + " Notas: "
             + str(aluno.notas[0])
             + " "
             + str(aluno.notas[1])
             + " e "
             + str(aluno.notas[2])
             + " Média: "
-            + str(aluno.media)
+            + str(round(aluno.media, 1))
             + "\n"
         )
 
 
-while user_choice != "15":
+def show_alunos_by_media(case):
+    lista_alunos = []
+    for aluno in alunos:
+        if case == "aprovados" and aluno.media >= 7:
+            lista_alunos.append(aluno)
+        elif case == "final" and (aluno.media >= 5 and aluno.media < 7):
+            lista_alunos.append(aluno)
+        elif case == "reprovados" and (aluno.meda < 5):
+            lista_alunos.append(aluno)
+    for aluno_aprovado in lista_alunos:
+        print(
+            aluno_aprovado.nome
+            + "."
+            + " Notas: "
+            + str(aluno_aprovado.notas[0])
+            + " "
+            + str(aluno_aprovado.notas[1])
+            + " e "
+            + str(aluno_aprovado.notas[2])
+            + " Média: "
+            + str(round(aluno_aprovado.media, 1))
+            + "\n"
+        )
+
+
+def save_as_json():
+    lista_dumps = []
+    for aluno in alunos:
+        lista_dumps.append(aluno.toJson())
+    with open("lista_alunos.json", "w") as escrever:
+        json.dump(lista_dumps, escrever)
+        print("\nSalvando...")
+        print("\nLista salva com sucesso.")
+
+
+while user_choice != "16":
     if user_choice == "1":
         add_aluno()
     elif user_choice == "2":
@@ -268,4 +322,12 @@ while user_choice != "15":
         show_alunos_sorted_alpha()
     elif user_choice == "11":
         show_sorted_alunos_notas()
+    elif user_choice == "12":
+        show_alunos_by_media("aprovados")
+    elif user_choice == "13":
+        show_alunos_by_media("final")
+    elif user_choice == "14":
+        show_alunos_by_media("reprovados")
+    elif user_choice == "15":
+        save_as_json()
     lista_escolhas()

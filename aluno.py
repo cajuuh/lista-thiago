@@ -15,3 +15,6 @@ class Aluno:  # classe
 
     def __float__(self):
         return float(self.media)
+
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
