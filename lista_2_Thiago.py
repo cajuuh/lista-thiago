@@ -1,18 +1,22 @@
 import json
 import os.path
 from aluno import Aluno
+from types import SimpleNamespace
+
 
 alunos = []
 user_choice = ""
-aluno = Aluno()
 
 if os.path.isfile("lista_alunos.json"):
-    aluno_from_json = Aluno()
     with open("lista_alunos.json") as dados_carregados:
+        aluno = Aluno()
         dados = json.load(dados_carregados)
-        for aluno in dados:
-            print(aluno)
-
+        for aluno_data in dados:
+            aluno_loads = json.loads(aluno_data, object_hook=lambda d: SimpleNamespace(**d))
+            aluno.nome = aluno_loads.nome
+            aluno.notas = aluno_loads.notas
+            aluno.media = aluno_loads.media
+            alunos.append()
 
 perguntas = [
     " 1. Adicionar Aluno",
@@ -60,7 +64,7 @@ def do_media(notas):
         if i == "":
             i = 0
         valor = valor + int(i)
-    return valor / 3
+    return round(valor / 3, 1)
 
 
 def insertion_notas(lista_de_notas):
@@ -111,10 +115,10 @@ def add_nota():
 
 def remove_aluno():
     nome_aluno = input("\n Digite o nome do aluno que deseha remover: ")
-    if checa_existe(alunos, lambda x: x.nome != nome_aluno):
-        print("\n Esse Aluno Não Está Cadastrado")
-    else:
+    if checa_existe(alunos, lambda x: x.nome == nome_aluno):
         alunos.remove(busca_aluno(nome_aluno))
+    else:
+        print("\n Esse Aluno Não Está Cadastrado")
 
 
 def remove_nota():
@@ -239,7 +243,7 @@ def show_alunos_sorted_alpha():
                 + " e "
                 + str(aluno.notas[2])
                 + " Média: "
-                + str(aluno.media)
+                + str(aluno.media, 1)
                 + "\n"
             )
 
@@ -259,7 +263,7 @@ def show_sorted_alunos_notas():
             + " e "
             + str(aluno.notas[2])
             + " Média: "
-            + str(round(aluno.media, 1))
+            + str(aluno.media, 1)
             + "\n"
         )
 
